@@ -1,8 +1,10 @@
 import {combineReducers, configureStore} from '@reduxjs/toolkit'
 import loginSlice from "../screens/LoginScreen/LoginSlice";
+import signUpSlice from "../screens/SignUpScreen/SignUpSlice";
 
 const authentication = combineReducers({
-  loginSlice
+  loginSlice,
+  signUpSlice
 })
 
 const store = configureStore({

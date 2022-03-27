@@ -1,25 +1,23 @@
 import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {RootState} from "../../store/Store";
 import realmDB from "../../services/RealmDB";
+import {RootState} from "../../store/Store";
 
 interface RegisterUserStatus {
   created: boolean,
   message: string,
 }
 
-interface LoginState {
-  logged: boolean,
+interface SignUpState {
   userId: string,
   register: RegisterUserStatus
 }
 
-interface LoginCredentials {
+interface SignUpCredentials {
   username: string,
   password: string,
 }
 
-const initialState: LoginState = {
-  logged: false,
+const initialState: SignUpState = {
   userId: '',
   register: {
     created: false,
@@ -29,7 +27,7 @@ const initialState: LoginState = {
 
 export const registerUserByEmailPassword = createAsyncThunk(
   'users/registerByEmailPassword',
-  async (credentials: LoginCredentials, {rejectWithValue}) => {
+  async (credentials: SignUpCredentials, {rejectWithValue}) => {
     try {
       await realmDB.emailPasswordAuth.registerUser({
         email: credentials.username,
@@ -41,20 +39,18 @@ export const registerUserByEmailPassword = createAsyncThunk(
   }
 );
 
-export const loginSlice = createSlice({
-  name: 'login',
+export const signUpSlice = createSlice({
+  name: 'signup',
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<LoginCredentials>) => {
-
-    },
-    register: (state, action: PayloadAction<LoginCredentials>) => {
+    signup: (state, action: PayloadAction<SignUpCredentials>) => {
 
     },
   },
   extraReducers: (builder) => {
     builder.addCase(registerUserByEmailPassword.fulfilled, (state, action) => {
       state.register.created = true;
+      state.register.message = "success-registered";
 
     });
     builder.addCase(registerUserByEmailPassword.rejected, (state, action) => {
@@ -65,11 +61,11 @@ export const loginSlice = createSlice({
 });
 
 export const {
-  login,
-} = loginSlice.actions;
+  signup
+} = signUpSlice.actions;
 
 export const isLogged = (state: RootState) => state.authentication.loginSlice.logged;
-export const userRegisterCreated = (state: RootState) => state.authentication.loginSlice.register.created;
-export const userRegisterMessage = (state: RootState) => state.authentication.loginSlice.register.message;
+export const userRegisterCreated = (state: RootState) => state.authentication.signUpSlice.register.created;
+export const userRegisterMessage = (state: RootState) => state.authentication.signUpSlice.register.message;
 
-export default loginSlice.reducer;
+export default signUpSlice.reducer;

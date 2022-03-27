@@ -1,33 +1,37 @@
 import React, {useState} from "react";
 import {View, Text, TextInput, Button} from "react-native";
 import {useDispatch, useSelector} from "react-redux";
-import {userRegisterMessage,isLogged, registerUserByEmailPassword} from "./LoginSlice";
+import {errorMessage, isLogged, loginUserByEmailPassword} from "./LoginSlice";
 import realmDB from "./../../services/RealmDB";
-import i18n from "i18next";
+import i18n, {use} from "i18next";
 import {useTranslation} from "react-i18next";
+import User = Realm.User;
 
+// @ts-ignore
 export default function LoginScreen({navigation}) {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const {t} = useTranslation();
   const dispatch = useDispatch();
-  const registerMessage = useSelector(userRegisterMessage);
+  const isUserLogged = useSelector(isLogged);
+  const loginErrorMessage = useSelector(errorMessage)
 
-  // const onChangeText = async (text: string) => {
-  //   dispatch(setUserName(text));
-  //   await createUser();
-  //   navigation.navigate('Authentication', {
-  //     screen: 'SignUp'
-  //   });
-  // }
+  const login = async () => {
+    dispatch(loginUserByEmailPassword({
+      username,
+      password
+    }))
+  }
 
-
-
-  const createUser = async () => {
-  dispatch(registerUserByEmailPassword({
-    username,
-    password
-  }));
+  const goToSignUpScreen = async () => {
+    try {
+      const credentials = Realm.Credentials.emailPassword(username, password);
+      const user = await  realmDB.logIn(credentials);
+      console.log(user.id);
+    } catch (e) {
+      console.log(e);
+    }
+  }
     // try {
     //   await realmDB.emailPasswordAuth.registerUser({
     //     email: username,
@@ -48,7 +52,6 @@ export default function LoginScreen({navigation}) {
     // } catch (e) {
     //   console.log(e.message);
     // }
-  }
 
   return (
     <View>
@@ -67,8 +70,11 @@ export default function LoginScreen({navigation}) {
         secureTextEntry={true}
         onChangeText={setPassword}
       />
-      <Button title='Login' onPress={createUser}/>
-      <Text>{t(registerMessage)}</Text>
+      <Button title='Login' onPress={login}/>
+      {/*<Button title={t('signup')} onPress={goToSignUpScreen}/>*/}
+      <Text>{username}</Text>
+      <Text>{password}</Text>
+      <Text>{loginErrorMessage}</Text>
       <Text>LOGIN</Text>
     </View>
   )
