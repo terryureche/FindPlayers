@@ -3,6 +3,7 @@
     "home": "Home",
     "settings": "Settings",
     "unexpected-error": "An unexpected error has occurred. Please try again later.",
-    "already-registered-user": "User already exist!"
+    "already-registered-user": "User already exist!",
+    "signup": "Register"
   }
 }
